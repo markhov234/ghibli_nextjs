@@ -1,4 +1,10 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {}
-
-module.exports = nextConfig
+// next.config.js
+module.exports = {
+    /* config options here */
+    reactStrictMode: true,
+    typescript: {
+      // Enable TypeScript type checking
+      ignoreBuildErrors: true,
+    },
+  };
+  
