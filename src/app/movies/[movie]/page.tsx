@@ -18,15 +18,30 @@ interface MovieInfo {
   // Add other properties as needed
 }
 
+interface ImageInfo {
+  title: string;
+  images: string;
+}
+// ... (imports)
+
 function MovieDetails({ params }: MovieProps) {
   const [movieInfo, setMovieInfo] = useState<MovieInfo | null>(null);
+  const [imageInfo, setImageInfo] = useState<ImageInfo[]>([]);
   const { movie } = params;
 
   useEffect(() => {
     const fetchMovie = async () => {
       try {
+        // Step 1: Fetch movie information
         const response = await axios.get(`/api/movies/movie/${movie}`);
-        setMovieInfo(response.data);
+        const fetchedMovieInfo = response.data;
+        setMovieInfo(fetchedMovieInfo);
+
+        // Step 2: Call Wikipedia API using movieInfo.title
+        const wikiMovieTitle = fetchedMovieInfo.title.split(' ').join('_');
+        const wikipediaResponse = await axios.get(`/api/wikipedia/${encodeURIComponent(fetchedMovieInfo.title)}`);
+        const wikipediaData = wikipediaResponse.data;
+        setImageInfo(wikipediaData);
       } catch (error) {
         console.error('Error fetching movie info:', error);
       }
@@ -35,9 +50,9 @@ function MovieDetails({ params }: MovieProps) {
     fetchMovie();
   }, [movie]);
 
-if(!movieInfo){
-  return <div>Loading...</div>;
-}
+  if (!movieInfo) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div>
@@ -47,19 +62,25 @@ if(!movieInfo){
         <p>{movieInfo.description}</p>
         <p>{movieInfo.director}</p>
 
-
         <img src={movieInfo.image} alt={movieInfo.title} />
         <img src={movieInfo.movie_banner} alt={movieInfo.title} />
 
-        {movieInfo.people.map((individual:any, key:Key) => (
-      <ul key={key}>
-        <li>{individual.name}</li>
-        {individual.gender !== "NA" && <li><span> Gender : {individual.gender}</span></li>}
-        {individual.age &&<li> <span>Age : {individual.age}</span></li>}
-      {/* <img src={}/>  Need to fix a way to show an image of the persons */}
-      </ul>
-    ))}
+        {movieInfo.people.map((individual: any, key: Key) => (
+          <ul key={key}>
+            <li>{individual.name}</li>
+            {individual.gender !== "NA" && <li><span> Gender: {individual.gender}</span></li>}
+            {individual.age && <li><span>Age: {individual.age}</span></li>}
 
+            {imageInfo.map((image: ImageInfo, imageKey: React.Key) => (
+             individual.name && individual.name.toLowerCase().includes(image.title.toLowerCase()) && (
+                <li key={imageKey}>
+                  <img src={image.images[0]} />
+                  
+                  </li>
+              )
+            ))}
+          </ul>
+        ))}
       </div>
     </div>
   );

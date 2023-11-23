@@ -1,45 +1,68 @@
-"use client"
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import Link from 'next/link';
+"use client";
+// Import necessary dependencies
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import Link from "next/link";
+import MultiFilters from "../components/Organisms/o-multiFilter";
 
-
+// Define the functional component 'allPeoples'
 function allPeoples() {
-  const [peoplesInfo, setpeoplesInfo] = useState<any[] | null>(null);
+  // State to hold information about peoples (initialized as null)
+  const [peoplesInfo, setpeoplesInfo] = useState<any[] | null>(
+    null
+  );
 
+  // useEffect hook runs once when the component mounts
   useEffect(() => {
-    // Fetch Studio Ghibli item details
-    const fetchMovie = async () => {
+    // Fetch Studio Ghibli people details from the '/api/peoples/getPeoples' endpoint
+    const fetchPeople = async () => {
       try {
-        const response = await axios.get('/api/peoples/getPeoples');
+        // Step 1: Make an asynchronous request to the API endpoint
+        const response = await axios.get(
+          "/api/peoples/getPeoples"
+        );
+
+        // Step 2: Update the state with the fetched people information
         setpeoplesInfo(response.data);
       } catch (error) {
-        console.error('Error fetching movie info:', error);
+        // Handle errors if any occur during the API request
+        console.error("Error fetching people info:", error);
       }
     };
 
-    fetchMovie();
+    // Call the fetchPeople function when the component mounts (empty dependency array)
+    fetchPeople();
   }, []);
 
-
-{}
+  // Render the component
   return (
     <div>
+      {/* Display a heading */}
       <h2>Listes des films</h2>
-      {peoplesInfo && peoplesInfo.map((people: any, key: React.Key) => (
-        <li key={key}>
-          <h2>{people.name}</h2>
+
+      {peoplesInfo &&
+      <MultiFilters data={peoplesInfo} />
+}
+
+      {peoplesInfo &&
+        peoplesInfo.map((people: any, key: React.Key) => (
+          <li key={key}>
+            <h2>{people.name}</h2>
+
             <Link href={`/peoples/${people.id}`}>
-            Consulter les details du personnage
+              Consulter les details du personnage
+            </Link>
+
+            {people.gender !== "N A" && <p>{people.gender}</p>}
+
+            <Link href={`/movies/${people.films.id}`}>
+          {people.films.title}
           </Link>
-          {people.gender !=="N A" && <p>{people.gender}</p> }
-         {people.films.title}
-          <ul></ul>
-        </li>
-      ))
-      }
+
+            <ul></ul>
+          </li>
+        ))}
     </div>
   );
 }
-
 export default allPeoples;
