@@ -1,6 +1,8 @@
 "use client"
 import axios from "axios";
 import { Key, useEffect, useState } from "react";
+import Link from 'next/link';
+
 
 interface PeopleProps {
   params: any;
@@ -47,8 +49,10 @@ if(!peopleInfo){
         <ul>
         {peopleInfo && peopleInfo.films.map((filmInfo:any,key:React.Key)=>(
             <li key={key}>
+                 <Link href={`/movies/${filmInfo.id}`}>
               <p>{filmInfo.title}</p>
               <img src={filmInfo.image} />  
+              </Link>
             </li>
          ))}
          </ul>

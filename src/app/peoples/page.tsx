@@ -11,6 +11,9 @@ function allPeoples() {
   const [peoplesInfo, setpeoplesInfo] = useState<any[] | null>(
     null
   );
+  const [filterTitle, setFilterTitle] = useState<any[] | null>(
+    null
+  );
 
   // useEffect hook runs once when the component mounts
   useEffect(() => {
@@ -24,6 +27,7 @@ function allPeoples() {
 
         // Step 2: Update the state with the fetched people information
         setpeoplesInfo(response.data);
+        setFilterTitle(response.data);
       } catch (error) {
         // Handle errors if any occur during the API request
         console.error("Error fetching people info:", error);
@@ -34,14 +38,17 @@ function allPeoples() {
     fetchPeople();
   }, []);
 
+const updatePeoplesInfo = (newData:any) =>{
+  setpeoplesInfo(newData);
+}
+
   // Render the component
   return (
     <div>
       {/* Display a heading */}
       <h2>Listes des films</h2>
-
-      {peoplesInfo &&
-      <MultiFilters data={peoplesInfo} />
+      {filterTitle &&
+      <MultiFilters data={filterTitle} onUpdatePeoplesInfo={updatePeoplesInfo}/>
 }
 
       {peoplesInfo &&
